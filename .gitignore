@@ -1,0 +1,31 @@
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Output files (generated data - don't commit)
+01_Data_Analytics/*output/
+01_Data_Analytics/*.csv
+01_Data_Analytics/*.md
+!01_Data_Analytics/00_data_raw.csv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

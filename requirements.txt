@@ -1,0 +1,28 @@
+# Data Processing
+pandas==2.1.4
+numpy==1.26.3
+
+# Data Visualization
+matplotlib==3.8.2
+seaborn==0.13.1
+
+# Database
+sqlalchemy==2.0.25
+psycopg2-binary==2.9.9
+
+# Excel Support
+openpyxl==3.1.2
+xlrd==2.0.1
+
+# JSON/API
+requests==2.31.0
+
+# Jupyter
+jupyter==1.0.0
+ipykernel==6.29.0
+
+# Testing
+pytest==7.4.4
+
+# Utilities
+python-dateutil==2.8.2
