@@ -11,8 +11,8 @@ import sys
 # ============================================================================
 # CONFIGURATION
 # ============================================================================
-INPUT_FILE = "00_data_raw.csv"
-OUTPUT_FILE = "01.1_output.md"
+INPUT_FILE = "01.1_merged.csv"
+OUTPUT_FILE = "03.1_output.md"
 
 # Thresholds
 CATEGORICAL_THRESHOLD = 30  # Max unique values to be considered categorical
