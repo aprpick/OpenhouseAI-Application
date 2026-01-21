@@ -1,0 +1,152 @@
+import pandas as pd
+
+print("=== SALES + TARGET MERGE ===\n")
+
+# ============================================================================
+# BUILDER A
+# ============================================================================
+
+print("Processing Builder A...\n")
+
+# Load preprocessed files
+sales_a = pd.read_csv('01_Data_Analytics/04A_sales_preprocessed.csv')
+target_a = pd.read_csv('01_Data_Analytics/04A_target_preprocessed.csv')
+
+print(f"  Loaded sales: {len(sales_a)} rows")
+print(f"  Loaded targets: {len(target_a)} rows")
+
+# Aggregate sales to monthly by community
+sales_a_agg = sales_a.groupby(['community_name', 'year', 'month']).agg({
+    'home_id': 'count',  # total sales
+    'total_sale_price': 'sum',  # total revenue
+    'sqft': 'sum',  # total sqft
+    'sale_type': lambda x: (x == 'spec').sum(),  # spec count
+}).reset_index()
+
+# Rename columns
+sales_a_agg.columns = ['community', 'year', 'month', 'total_sales', 'total_revenue', 'total_sqft', 'spec_sales']
+
+# Count build and model sales
+build_sales = sales_a[sales_a['sale_type'] == 'build'].groupby(['community_name', 'year', 'month']).size().reset_index(name='build_sales')
+model_sales = sales_a[sales_a['sale_type'] == 'model'].groupby(['community_name', 'year', 'month']).size().reset_index(name='model_sales')
+build_sales.columns = ['community', 'year', 'month', 'build_sales']
+model_sales.columns = ['community', 'year', 'month', 'model_sales']
+
+# Merge sale types
+sales_a_agg = sales_a_agg.merge(build_sales, on=['community', 'year', 'month'], how='left')
+sales_a_agg = sales_a_agg.merge(model_sales, on=['community', 'year', 'month'], how='left')
+sales_a_agg['build_sales'] = sales_a_agg['build_sales'].fillna(0).astype(int)
+sales_a_agg['model_sales'] = sales_a_agg['model_sales'].fillna(0).astype(int)
+
+print(f"  Aggregated to monthly: {len(sales_a_agg)} community-months")
+
+# Merge with targets
+target_a_renamed = target_a.rename(columns={'community': 'community_std'})
+merged_a = sales_a_agg.merge(
+    target_a_renamed[['community_std', 'year', 'month', 'sales_target']],
+    left_on=['community', 'year', 'month'],
+    right_on=['community_std', 'year', 'month'],
+    how='outer'
+)
+merged_a = merged_a.drop('community_std', axis=1)
+
+# Fill nulls for months with no sales
+merged_a['total_sales'] = merged_a['total_sales'].fillna(0).astype(int)
+merged_a['spec_sales'] = merged_a['spec_sales'].fillna(0).astype(int)
+merged_a['build_sales'] = merged_a['build_sales'].fillna(0).astype(int)
+merged_a['model_sales'] = merged_a['model_sales'].fillna(0).astype(int)
+merged_a['total_revenue'] = merged_a['total_revenue'].fillna(0)
+merged_a['total_sqft'] = merged_a['total_sqft'].fillna(0)
+
+# Calculate variance
+merged_a['variance'] = merged_a['total_sales'] - merged_a['sales_target']
+
+# Add builder column
+merged_a['builder'] = 'A'
+
+print(f"  Merged with targets: {len(merged_a)} rows")
+
+# Save
+merged_a.to_csv('01_Data_Analytics/05A_sales_target_merged.csv', index=False)
+print(f"  ✓ Saved to 05A_sales_target_merged.csv\n")
+
+# ============================================================================
+# BUILDER B
+# ============================================================================
+
+print("Processing Builder B...\n")
+
+# Load preprocessed files
+sales_b = pd.read_csv('01_Data_Analytics/04B_sales_preprocessed.csv')
+target_b = pd.read_csv('01_Data_Analytics/04B_target_preprocessed.csv')
+
+print(f"  Loaded sales: {len(sales_b)} rows")
+print(f"  Loaded targets: {len(target_b)} rows")
+
+# Aggregate sales to monthly by community
+sales_b_agg = sales_b.groupby(['community_name', 'year', 'month']).agg({
+    'home_id': 'count',
+    'total_sale_price': 'sum',
+    'sqft': 'sum',
+    'sale_type': lambda x: (x == 'spec').sum(),
+}).reset_index()
+
+sales_b_agg.columns = ['community', 'year', 'month', 'total_sales', 'total_revenue', 'total_sqft', 'spec_sales']
+
+# Count build and model sales
+build_sales = sales_b[sales_b['sale_type'] == 'build'].groupby(['community_name', 'year', 'month']).size().reset_index(name='build_sales')
+model_sales = sales_b[sales_b['sale_type'] == 'model'].groupby(['community_name', 'year', 'month']).size().reset_index(name='model_sales')
+build_sales.columns = ['community', 'year', 'month', 'build_sales']
+model_sales.columns = ['community', 'year', 'month', 'model_sales']
+
+sales_b_agg = sales_b_agg.merge(build_sales, on=['community', 'year', 'month'], how='left')
+sales_b_agg = sales_b_agg.merge(model_sales, on=['community', 'year', 'month'], how='left')
+sales_b_agg['build_sales'] = sales_b_agg['build_sales'].fillna(0).astype(int)
+sales_b_agg['model_sales'] = sales_b_agg['model_sales'].fillna(0).astype(int)
+
+print(f"  Aggregated to monthly: {len(sales_b_agg)} community-months")
+
+# Merge with targets
+target_b_renamed = target_b.rename(columns={'community': 'community_std'})
+merged_b = sales_b_agg.merge(
+    target_b_renamed[['community_std', 'year', 'month', 'sales_target']],
+    left_on=['community', 'year', 'month'],
+    right_on=['community_std', 'year', 'month'],
+    how='outer'
+)
+merged_b = merged_b.drop('community_std', axis=1)
+
+# Fill nulls
+merged_b['total_sales'] = merged_b['total_sales'].fillna(0).astype(int)
+merged_b['spec_sales'] = merged_b['spec_sales'].fillna(0).astype(int)
+merged_b['build_sales'] = merged_b['build_sales'].fillna(0).astype(int)
+merged_b['model_sales'] = merged_b['model_sales'].fillna(0).astype(int)
+merged_b['total_revenue'] = merged_b['total_revenue'].fillna(0)
+merged_b['total_sqft'] = merged_b['total_sqft'].fillna(0)
+
+# Calculate variance
+merged_b['variance'] = merged_b['total_sales'] - merged_b['sales_target']
+
+# Add builder column
+merged_b['builder'] = 'B'
+
+print(f"  Merged with targets: {len(merged_b)} rows")
+
+# Save
+merged_b.to_csv('01_Data_Analytics/05B_sales_target_merged.csv', index=False)
+print(f"  ✓ Saved to 05B_sales_target_merged.csv\n")
+
+# ============================================================================
+# SUMMARY
+# ============================================================================
+
+print("=== MERGE COMPLETE ===\n")
+print("Created files:")
+print("  - 05A_sales_target_merged.csv")
+print("  - 05B_sales_target_merged.csv")
+print("\nColumns in output:")
+print("  - community, year, month")
+print("  - total_sales, sales_target, variance")
+print("  - total_revenue, total_sqft")
+print("  - spec_sales, build_sales, model_sales")
+print("  - builder")
