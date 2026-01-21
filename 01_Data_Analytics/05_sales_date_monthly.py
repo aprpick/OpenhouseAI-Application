@@ -1,4 +1,6 @@
 import pandas as pd
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 
 print("=== SALES + TARGET MERGE ===\n")
 
@@ -15,6 +17,13 @@ target_a = pd.read_csv('01_Data_Analytics/04A_target_preprocessed.csv')
 print(f"  Loaded sales: {len(sales_a)} rows")
 print(f"  Loaded targets: {len(target_a)} rows")
 
+# Check for null dates
+null_dates = sales_a['year'].isna() | sales_a['month'].isna()
+if null_dates.any():
+    print(f"  WARNING: {null_dates.sum()} sales with null year/month (will be dropped in groupby)")
+    print(f"  Sample rows with null dates:")
+    print(sales_a[null_dates][['home_id', 'sale_contract_date', 'year', 'month']].head())
+
 # Aggregate sales to monthly by community
 sales_a_agg = sales_a.groupby(['community_name', 'year', 'month']).agg({
     'home_id': 'count',  # total sales
@@ -22,6 +31,9 @@ sales_a_agg = sales_a.groupby(['community_name', 'year', 'month']).agg({
     'sqft': 'sum',  # total sqft
     'sale_type': lambda x: (x == 'spec').sum(),  # spec count
 }).reset_index()
+
+print(f"  After groupby: {sales_a_agg['home_id'].sum()} total sales across {len(sales_a_agg)} community-months")
+print(f"  Sales lost in aggregation: {len(sales_a) - sales_a_agg['home_id'].sum()}")
 
 # Rename columns
 sales_a_agg.columns = ['community', 'year', 'month', 'total_sales', 'total_revenue', 'total_sqft', 'spec_sales']
@@ -83,6 +95,13 @@ target_b = pd.read_csv('01_Data_Analytics/04B_target_preprocessed.csv')
 print(f"  Loaded sales: {len(sales_b)} rows")
 print(f"  Loaded targets: {len(target_b)} rows")
 
+# Check for null dates
+null_dates = sales_b['year'].isna() | sales_b['month'].isna()
+if null_dates.any():
+    print(f"  WARNING: {null_dates.sum()} sales with null year/month (will be dropped in groupby)")
+    print(f"  Sample rows with null dates:")
+    print(sales_b[null_dates][['home_id', 'sale_contract_date', 'year', 'month']].head())
+
 # Aggregate sales to monthly by community
 sales_b_agg = sales_b.groupby(['community_name', 'year', 'month']).agg({
     'home_id': 'count',
@@ -90,6 +109,9 @@ sales_b_agg = sales_b.groupby(['community_name', 'year', 'month']).agg({
     'sqft': 'sum',
     'sale_type': lambda x: (x == 'spec').sum(),
 }).reset_index()
+
+print(f"  After groupby: {sales_b_agg['home_id'].sum()} total sales across {len(sales_b_agg)} community-months")
+print(f"  Sales lost in aggregation: {len(sales_b) - sales_b_agg['home_id'].sum()}")
 
 sales_b_agg.columns = ['community', 'year', 'month', 'total_sales', 'total_revenue', 'total_sqft', 'spec_sales']
 

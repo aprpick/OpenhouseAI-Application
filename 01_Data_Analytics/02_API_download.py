@@ -29,8 +29,8 @@ try:
         print(f"DataFrame shape: {df.shape}")
         print(f"Columns: {list(df.columns)}")
         print(f"\nFirst 3 rows:\n{df.head(3)}\n")
-        df.to_csv('02A_api_crm_builder.csv', index=False)
-        print("✓ Saved to 02A_api_crm_builder.csv\n")
+        df.to_csv('01_Data_Analytics/02A_api_crm_builder.csv', index=False)
+        print("✓ Saved to 01_Data_Analytics/02A_api_crm_builder.csv\n")
     else:
         print(f"Error: {response.text}\n")
 except Exception as e:
@@ -52,8 +52,8 @@ try:
         
         print(f"DataFrame shape: {df.shape}")
         print(f"Columns: {list(df.columns)}")
-        df.to_csv('02B_api_crm_builder.csv', index=False)
-        print("✓ Saved to 02B_api_crm_builder.csv\n")
+        df.to_csv('01_Data_Analytics/02B_api_crm_builder.csv', index=False)
+        print("✓ Saved to 01_Data_Analytics/02B_api_crm_builder.csv\n")
     else:
         print(f"Error: {response.text}\n")
 except Exception as e:
@@ -76,7 +76,7 @@ try:
         print(f"DataFrame shape: {df.shape}")
         print(f"Columns: {list(df.columns)}")
         print(f"\nFirst 3 rows:\n{df.head(3)}\n")
-        df.to_csv('02A_api_traffic_builder.csv', index=False)
+        df.to_csv('01_Data_Analytics/02A_api_traffic_builder.csv', index=False)
         print("✓ Saved to 02A_api_traffic_builder.csv\n")
     else:
         print(f"Error: {response.text}\n")
@@ -99,8 +99,8 @@ try:
         
         print(f"DataFrame shape: {df.shape}")
         print(f"Columns: {list(df.columns)}")
-        df.to_csv('02B_api_traffic_builder.csv', index=False)
-        print("✓ Saved to 02B_api_traffic_builder.csv\n")
+        df.to_csv('01_Data_Analytics/02B_api_traffic_builder.csv', index=False)
+        print("✓ Saved to 01_Data_Analytics/02B_api_traffic_builder.csv\n")
     else:
         print(f"Error: {response.text}\n")
 except Exception as e:
